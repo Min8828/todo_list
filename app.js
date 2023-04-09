@@ -1,14 +1,17 @@
 const express = require('express')
-const app = express()
 const mongoose = require('mongoose')
+const Todo = require('./models/todo')
+
+// use dotenv while in informal env
+if (process.env.NODE_ENV !== 'production') require('dotenv').config()
+
+const app = express()
 const port = 3000
 
-mongoose
-  .connect(
-    'mongodb+srv://user000:000password@cluster0.97lloks.mongodb.net/?retryWrites=true&w=majority'
-  )
-  .then(() => console.log('Connect to MongoDB atlas successfully'))
-  .catch((e) => console.log(e))
+mongoose.connect(process.env.MONGODB_URI) // 設定連線到 mongoDB
+const db = mongoose.connection // 取得資料庫連線狀態
+db.on('error', () => console.log('mongodb error!')) // 連線異常
+db.once('open', () => console.log('mongodb connected!')) // 連線成功
 
 app.get('/', (req, res) => {
   res.send('hello world')
