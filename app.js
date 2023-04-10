@@ -46,7 +46,7 @@ app.post('/todos', (req, res) => {
   const name = req.body.name
 
   return Todo.create({ name })
-    .then(() => redirect('/'))
+    .then(() => res.redirect('/'))
     .catch((err) => console.log(err))
 })
 
@@ -73,6 +73,17 @@ app.post('/todos/:_id/edit', async (req, res) => {
     const updateTodo = await Todo.findOneAndUpdate({ _id }, { name }).exec()
     await updateTodo.save()
     res.redirect(`/todos/${_id}`)
+  } catch {
+    (err) => console.log(err)
+  }
+})
+
+app.post('/todos/:_id/delete', async (req, res) => {
+  try {
+    const _id = req.params._id
+    const name = req.body.name 
+    await Todo.findOneAndDelete({ _id })
+    res.redirect('/')
   } catch {
     (err) => console.log(err)
   }
