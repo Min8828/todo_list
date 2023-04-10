@@ -50,12 +50,32 @@ app.post('/todos', (req, res) => {
     .catch((err) => console.log(err))
 })
 
-app.get('/todos/:id', (req, res) => {
-  const id = req.params.id
-  return Todo.findById(id)
+app.get('/todos/:_id', (req, res) => {
+  const _id = req.params._id
+  return Todo.findById(_id)
     .lean()
-    .then((todo) => res.render("detail", { todo }))
+    .then((todo) => res.render('detail', { todo }))
     .catch((error) => console.log(error))
+})
+
+app.get('/todos/:_id/edit', (req, res) => {
+  const _id = req.params._id
+  return Todo.findById(_id)
+    .lean()
+    .then((todo) => res.render('edit', { todo }))
+    .catch((error) => console.log(error))
+})
+
+app.post('/todos/:_id/edit', async (req, res) => {
+  try {
+    const _id = req.params._id
+    const name = req.body.name
+    const updateTodo = await Todo.findOneAndUpdate({ _id }, { name }).exec()
+    await updateTodo.save()
+    res.redirect(`/todos/${_id}`)
+  } catch {
+    (err) => console.log(err)
+  }
 })
 
 app.listen(port, () => console.log(`Listening on http://localhost:${port}`))
