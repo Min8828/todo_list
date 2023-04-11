@@ -3,6 +3,7 @@ if (process.env.NODE_ENV !== 'production') require('dotenv').config()
 
 const express = require('express')
 const mongoose = require('mongoose')
+const methodOverride = require('method-override')
 const engine = require('express-handlebars').engine
 const Todo = require('./models/todo')
 
@@ -22,6 +23,7 @@ app.set('view engine', 'hbs')
 
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }))
+app.use(methodOverride('_method')) // override with POST having '?_method=<http method>'
 
 mongoose.connect(process.env.MONGODB_URI) // 設定連線到 mongoDB
 const db = mongoose.connection // 取得資料庫連線狀態
@@ -31,7 +33,7 @@ db.once('open', () => console.log('mongodb connected!')) // 連線成功
 app.get('/', async (req, res) => {
   try {
     // 把 Mongoose 的 Model 物件轉換成乾淨的 JavaScript 資料陣列
-    const todos = await Todo.find({}).lean().sort({_id: 'asc'}).exec()
+    const todos = await Todo.find({}).lean().sort({ _id: 'asc' }).exec()
     res.render('index', { todos })
   } catch {
     (err) => console.log(err)
@@ -66,7 +68,7 @@ app.get('/todos/:_id/edit', (req, res) => {
     .catch((error) => console.log(error))
 })
 
-app.post('/todos/:_id/edit', async (req, res) => {
+app.put('/todos/:_id/', async (req, res) => {
   try {
     const _id = req.params._id
     const { name, isDone } = req.body
@@ -80,7 +82,7 @@ app.post('/todos/:_id/edit', async (req, res) => {
   }
 })
 
-app.post('/todos/:_id/delete', async (req, res) => {
+app.delete('/todos/:_id/', async (req, res) => {
   try {
     const _id = req.params._id
     await Todo.findOneAndDelete({ _id })
