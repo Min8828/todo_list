@@ -2,19 +2,14 @@
 if (process.env.NODE_ENV !== 'production') require('dotenv').config()
 
 const express = require('express')
-const mongoose = require('mongoose')
 const methodOverride = require('method-override')
 const engine = require('express-handlebars').engine
-const Todo = require('./models/todo')
-const routes = require('./routes')
 
 const app = express()
 const port = 3000
 
-mongoose.connect(process.env.MONGODB_URI) // 設定連線到 mongoDB
-const db = mongoose.connection // 取得資料庫連線狀態
-db.on('error', () => console.log('mongodb error!')) // 連線異常
-db.once('open', () => console.log('mongodb connected!')) // 連線成功
+const routes = require('./routes')
+require('./config/mongoose') // mongoose
 
 // setting template engine
 app.engine(
