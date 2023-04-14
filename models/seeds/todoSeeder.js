@@ -7,5 +7,5 @@ db.once('open', () => {
   for (let i = 0; i < 10; i++) {
     Todo.create({ name: `name-${i}`, isDone: false })
   }
-  console.log('done')
+  console.log(' done')
 })
